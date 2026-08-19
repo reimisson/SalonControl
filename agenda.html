@@ -1,0 +1,484 @@
+```html
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Agenda - SalonControl</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+
+</head>
+
+
+<body>
+
+<div class="layout">
+
+
+    <!-- MENU -->
+
+    <aside class="sidebar">
+
+        <h2>💇 SalonControl</h2>
+
+        <nav>
+
+            <a href="/">🏠 Dashboard</a>
+
+            <a href="/clientes">👥 Clientes</a>
+
+            <a href="/agenda" class="ativo">📅 Agenda</a>
+
+            <a href="/servicos">✂️ Serviços</a>
+
+            <a href="/profissionais">👩 Profissionais</a>
+
+            <a href="/financeiro">💰 Financeiro</a>
+
+        </nav>
+
+    </aside>
+
+
+    <!-- CONTEÚDO -->
+
+    <main class="conteudo">
+
+
+        <header>
+
+            <h1>📅 Agenda</h1>
+
+            <p>
+                Agende e acompanhe os atendimentos do salão.
+            </p>
+
+        </header>
+
+
+        <!-- NOVO AGENDAMENTO -->
+
+        <section class="formulario">
+
+            <h2>➕ Novo Agendamento</h2>
+
+            <form
+                action="/agendamentos/novo"
+                method="POST"
+            >
+
+                <label>Cliente</label>
+
+                <select
+                    name="cliente_id"
+                    required
+                >
+
+                    <option value="">
+                        Selecione o cliente
+                    </option>
+
+                    {% for cliente in clientes %}
+
+                        <option
+                            value="{{ cliente['id'] }}"
+                        >
+                            {{ cliente['nome'] }}
+                        </option>
+
+                    {% endfor %}
+
+                </select>
+
+
+                <label>Serviço</label>
+
+                <select
+                    name="servico_id"
+                    id="servico"
+                    required
+                    onchange="atualizarServico()"
+                >
+
+                    <option value="">
+                        Selecione o serviço
+                    </option>
+
+                    {% for servico in servicos %}
+
+                        <option
+                            value="{{ servico['id'] }}"
+                            data-preco="{{ servico['preco'] }}"
+                            data-duracao="{{ servico['duracao'] }}"
+                        >
+
+                            {{ servico['nome'] }}
+
+                        </option>
+
+                    {% endfor %}
+
+                </select>
+
+
+                <label>Preço</label>
+
+                <input
+                    type="number"
+                    name="valor"
+                    id="valor"
+                    step="0.01"
+                    readonly
+                    required
+                >
+
+
+                <p
+                    id="duracao"
+                    style="
+                        margin-top: -5px;
+                        margin-bottom: 15px;
+                    "
+                >
+                    ⏱️ Duração: -
+                </p>
+
+
+                <label>Profissional</label>
+
+                <select
+                    name="profissional_id"
+                    required
+                >
+
+                    <option value="">
+                        Selecione o profissional
+                    </option>
+
+                    {% for profissional in profissionais %}
+
+                        <option
+                            value="{{ profissional['id'] }}"
+                        >
+
+                            {{ profissional['nome'] }}
+
+                            {% if profissional['especialidade'] %}
+
+                                -
+                                {{ profissional['especialidade'] }}
+
+                            {% endif %}
+
+                        </option>
+
+                    {% endfor %}
+
+                </select>
+
+
+                <label>Data</label>
+
+                <input
+                    type="date"
+                    name="data"
+                    required
+                >
+
+
+                <label>Horário</label>
+
+                <input
+                    type="time"
+                    name="horario"
+                    required
+                >
+
+
+                <label>Observações</label>
+
+                <textarea
+                    name="observacoes"
+                    placeholder="Observações do atendimento"
+                ></textarea>
+
+
+                <button type="submit">
+                    📅 Agendar Cliente
+                </button>
+
+            </form>
+
+        </section>
+
+
+        <!-- LISTA -->
+
+        <section class="lista">
+
+            <h2>📋 Agendamentos</h2>
+
+
+            {% if agendamentos %}
+
+
+                {% for agendamento in agendamentos %}
+
+                    <div class="cliente">
+
+
+                        <!-- INFORMAÇÕES -->
+
+                        <div>
+
+                            <strong>
+                                👤 {{ agendamento['cliente_nome'] }}
+                            </strong>
+
+                            <br>
+
+                            ✂️ Serviço:
+                            {{ agendamento['servico'] }}
+
+                            <br>
+
+                            👩 Profissional:
+
+                            {% if agendamento['profissional_nome'] %}
+
+                                <strong>
+                                    {{ agendamento['profissional_nome'] }}
+                                </strong>
+
+                            {% else %}
+
+                                <strong style="color: #d97706;">
+                                    ⚠️ Não informado
+                                </strong>
+
+                                <br><br>
+
+                                <form
+                                    action="/agendamentos/{{ agendamento['id'] }}/profissional"
+                                    method="POST"
+                                >
+
+                                    <select
+                                        name="profissional_id"
+                                        required
+                                    >
+
+                                        <option value="">
+                                            Selecione o profissional
+                                        </option>
+
+                                        {% for profissional in profissionais %}
+
+                                            <option
+                                                value="{{ profissional['id'] }}"
+                                            >
+
+                                                {{ profissional['nome'] }}
+
+                                            </option>
+
+                                        {% endfor %}
+
+                                    </select>
+
+                                    <br><br>
+
+                                    <button type="submit">
+                                        👩 Vincular profissional
+                                    </button>
+
+                                </form>
+
+                            {% endif %}
+
+
+                            <br>
+
+                            📅 Data:
+                            {{ agendamento['data'] }}
+
+                            <br>
+
+                            ⏰ Horário:
+                            {{ agendamento['horario'] }}
+
+                            <br>
+
+                            💰 Valor:
+
+                            R$
+                            {{ "%.2f"|format(agendamento['valor']) }}
+
+
+                            {% if agendamento['observacoes'] %}
+
+                                <br>
+
+                                📝 Observações:
+                                {{ agendamento['observacoes'] }}
+
+                            {% endif %}
+
+                        </div>
+
+
+                        <!-- STATUS -->
+
+                        <div>
+
+
+                            {% if agendamento['status'] == 'Concluído' %}
+
+                                <span
+                                    class="badge"
+                                    style="color: green;"
+                                >
+                                    ✅ Concluído
+                                </span>
+
+                                <br><br>
+
+                                <strong>
+                                    💰 Atendimento realizado
+                                </strong>
+
+
+                            {% elif agendamento['status'] == 'Cancelado' %}
+
+                                <span
+                                    class="badge"
+                                    style="color: red;"
+                                >
+                                    🔴 Cancelado
+                                </span>
+
+
+                            {% else %}
+
+                                <span
+                                    class="badge"
+                                    style="color: #d97706;"
+                                >
+                                    🟡 Agendado
+                                </span>
+
+                                <br><br>
+
+
+                                <!-- CONCLUIR -->
+
+                                <form
+                                    action="/agendamentos/{{ agendamento['id'] }}/concluir"
+                                    method="POST"
+                                    style="margin-bottom: 10px;"
+                                    onsubmit="
+                                        return confirm(
+                                            'Confirmar que este atendimento foi realizado?'
+                                        );
+                                    "
+                                >
+
+                                    <button type="submit">
+                                        ✅ Concluir
+                                    </button>
+
+                                </form>
+
+
+                                <!-- CANCELAR -->
+
+                                <form
+                                    action="/agendamentos/{{ agendamento['id'] }}/cancelar"
+                                    method="POST"
+                                    onsubmit="
+                                        return confirm(
+                                            'Deseja realmente cancelar este agendamento?'
+                                        );
+                                    "
+                                >
+
+                                    <button type="submit">
+                                        ❌ Cancelar
+                                    </button>
+
+                                </form>
+
+                            {% endif %}
+
+
+                        </div>
+
+                    </div>
+
+                {% endfor %}
+
+
+            {% else %}
+
+                <p>
+                    📭 Nenhum agendamento cadastrado.
+                </p>
+
+            {% endif %}
+
+
+        </section>
+
+    </main>
+
+</div>
+
+
+<script>
+
+function atualizarServico() {
+
+    const select =
+        document.getElementById("servico");
+
+    const opcao =
+        select.options[
+            select.selectedIndex
+        ];
+
+    const valor =
+        opcao.dataset.preco;
+
+    const duracao =
+        opcao.dataset.duracao;
+
+    document.getElementById("valor").value =
+        valor || "";
+
+    document.getElementById("duracao").innerText =
+
+        duracao
+
+            ? "⏱️ Duração: "
+              + duracao
+              + " minutos"
+
+            : "⏱️ Duração: -";
+
+}
+
+</script>
+
+
+</body>
+
+</html>
+```

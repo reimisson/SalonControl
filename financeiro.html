@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Financeiro - SalonControl</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+
+    <!-- CHART.JS -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+    <style>
+
+        /* =========================
+           FILTRO
+        ========================= */
+
+        .filtro-financeiro {
+
+            background: white;
+
+            padding: 20px;
+
+            border-radius: 15px;
+
+            box-shadow:
+                0 4px 15px
+                rgba(0, 0, 0, 0.08);
+
+            margin-top: 25px;
+
+            margin-bottom: 25px;
+
+        }
+
+
+        .filtro-financeiro h3 {
+
+            margin-top: 0;
+
+            margin-bottom: 15px;
+
+            color: #111827;
+
+        }
+
+
+        .botoes-periodo {
+
+            display: flex;
+
+            flex-wrap: wrap;
+
+            gap: 10px;
+
+            margin-bottom: 20px;
+
+        }
+
+
+        .botao-periodo {
+
+            text-decoration: none;
+
+            padding: 10px 18px;
+
+            border-radius: 8px;
+
+            background: #f3f4f6;
+
+            color: #374151;
+
+            font-weight: 600;
+
+            transition: 0.2s;
+
+        }
+
+
+        .botao-periodo:hover {
+
+            background: #e5e7eb;
+
+        }
+
+
+        .botao-periodo.ativo {
+
+            background: #7c3aed;
+
+            color: white;
+
+        }
+
+
+        .periodo-personalizado {
+
+            display: flex;
+
+            flex-wrap: wrap;
+
+            align-items: end;
+
+            gap: 15px;
+
+        }
+
+
+        .campo-data {
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 6px;
+
+        }
+
+
+        .campo-data label {
+
+            font-size: 14px;
+
+            font-weight: 600;
+
+            color: #374151;
+
+        }
+
+
+        .campo-data input {
+
+            padding: 10px;
+
+            border: 1px solid #d1d5db;
+
+            border-radius: 8px;
+
+        }
+
+
+        .botao-aplicar {
+
+            padding: 10px 20px;
+
+            border: none;
+
+            border-radius: 8px;
+
+            background: #111827;
+
+            color: white;
+
+            font-weight: 600;
+
+            cursor: pointer;
+
+        }
+
+
+        .botao-aplicar:hover {
+
+            background: #1f2937;
+
+        }
+
+
+        .periodo-atual {
+
+            margin-top: 15px;
+
+            color: #6b7280;
+
+            font-size: 14px;
+
+        }
+
+
+        /* =========================
+           CARDS
+        ========================= */
+
+        .financeiro-cards {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(
+                    auto-fit,
+                    minmax(210px, 1fr)
+                );
+
+            gap: 20px;
+
+            margin-top: 25px;
+
+            margin-bottom: 30px;
+
+        }
+
+
+        .financeiro-card {
+
+            padding: 25px;
+
+            border-radius: 15px;
+
+            background: white;
+
+            box-shadow:
+                0 4px 15px
+                rgba(0, 0, 0, 0.08);
+
+        }
+
+
+        .financeiro-card span {
+
+            display: block;
+
+            font-size: 15px;
+
+            font-weight: 600;
+
+            margin-bottom: 10px;
+
+            color: #374151;
+
+        }
+
+
+        .financeiro-card h2 {
+
+            margin: 0;
+
+            font-size: 26px;
+
+            color: #111827;
+
+        }
+
+
+        .card-faturamento {
+
+            border-left: 5px solid #7c3aed;
+
+        }
+
+
+        .card-atendimentos {
+
+            border-left: 5px solid #2563eb;
+
+        }
+
+
+        .card-comissao {
+
+            border-left: 5px solid #f59e0b;
+
+        }
+
+
+        .card-liquido {
+
+            border-left: 5px solid #16a34a;
+
+        }
+
+
+        /* =========================
+           GRÁFICOS
+        ========================= */
+
+        .graficos {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(
+                    auto-fit,
+                    minmax(350px, 1fr)
+                );
+
+            gap: 20px;
+
+            margin-bottom: 30px;
+
+        }
+
+
+        .grafico-card {
+
+            background: white;
+
+            padding: 25px;
+
+            border-radius: 15px;
+
+            box-shadow:
+                0 4px 15px
+                rgba(0, 0, 0, 0.08);
+
+        }
+
+
+        .grafico-card h2 {
+
+            margin-top: 0;
+
+            margin-bottom: 20px;
+
+            color: #111827;
+
+        }
+
+
+        .grafico-container {
+
+            position: relative;
+
+            height: 300px;
+
+        }
+
+
+        /* =========================
+           TABELA
+        ========================= */
+
+        .financeiro-tabela {
+
+            width: 100%;
+
+            border-collapse: collapse;
+
+            margin-top: 20px;
+
+            background: white;
+
+            border-radius: 12px;
+
+            overflow: hidden;
+
+        }
+
+
+        .financeiro-tabela th,
+        .financeiro-tabela td {
+
+            padding: 15px;
+
+            text-align: left;
+
+            border-bottom:
+                1px solid #e5e7eb;
+
+        }
+
+
+        .financeiro-tabela th {
+
+            background: #f3f4f6;
+
+            color: #374151;
+
+        }
+
+
+        .valor-comissao {
+
+            font-weight: bold;
+
+            color: #d97706;
+
+        }
+
+
+        .valor-faturamento {
+
+            font-weight: bold;
+
+            color: #2563eb;
+
+        }
+
+
+        /* =========================
+           RESPONSIVO
+        ========================= */
+
+        @media (max-width: 700px) {
+
+            .periodo-personalizado {
+
+                flex-direction: column;
+
+                align-items: stretch;
+
+            }
+
+
+            .campo-data input {
+
+                width: 100%;
+
+                box-sizing: border-box;
+
+            }
+
+
+            .graficos {
+
+                grid-template-columns: 1fr;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="layout">
+
+
+    <!-- =========================
+         MENU LATERAL
+    ========================= -->
+
+    <aside class="sidebar">
+
+        <h2>💇 SalonControl</h2>
+
+
+        <nav>
+
+            <a href="{{ url_for('inicio') }}">
+                🏠 Dashboard
+            </a>
+
+
+            <a href="{{ url_for('clientes') }}">
+                👥 Clientes
+            </a>
+
+
+            <a href="{{ url_for('agenda') }}">
+                📅 Agenda
+            </a>
+
+
+            <a href="{{ url_for('servicos') }}">
+                ✂️ Serviços
+            </a>
+
+
+            <a href="{{ url_for('profissionais') }}">
+                👩 Profissionais
+            </a>
+
+
+            <a
+                href="{{ url_for('financeiro') }}"
+                class="ativo"
+            >
+                💰 Financeiro
+            </a>
+
+        </nav>
+
+    </aside>
+
+
+
+    <!-- =========================
+         CONTEÚDO
+    ========================= -->
+
+    <main class="conteudo">
+
+
+        <header>
+
+            <h1>
+                💰 Financeiro
+            </h1>
+
+
+            <p>
+                Resumo financeiro dos atendimentos concluídos.
+            </p>
+
+        </header>
+
+
+
+        <!-- =========================
+             FILTRO
+        ========================= -->
+
+        <section class="filtro-financeiro">
+
+            <h3>
+                📅 Período
+            </h3>
+
+
+            <div class="botoes-periodo">
+
+
+                <a
+                    href="/financeiro?periodo=hoje"
+                    class="botao-periodo
+                    {% if periodo == 'hoje' %}
+                        ativo
+                    {% endif %}"
+                >
+
+                    Hoje
+
+                </a>
+
+
+
+                <a
+                    href="/financeiro?periodo=semana"
+                    class="botao-periodo
+                    {% if periodo == 'semana' %}
+                        ativo
+                    {% endif %}"
+                >
+
+                    Esta semana
+
+                </a>
+
+
+
+                <a
+                    href="/financeiro?periodo=mes"
+                    class="botao-periodo
+                    {% if periodo == 'mes' %}
+                        ativo
+                    {% endif %}"
+                >
+
+                    Este mês
+
+                </a>
+
+            </div>
+
+
+
+            <!-- PERSONALIZADO -->
+
+            <form
+                action="/financeiro"
+                method="GET"
+                class="periodo-personalizado"
+            >
+
+                <input
+                    type="hidden"
+                    name="periodo"
+                    value="personalizado"
+                >
+
+
+                <div class="campo-data">
+
+                    <label>
+                        Data inicial
+                    </label>
+
+
+                    <input
+                        type="date"
+                        name="data_inicio"
+                        value="{{ data_inicio }}"
+                        required
+                    >
+
+                </div>
+
+
+
+                <div class="campo-data">
+
+                    <label>
+                        Data final
+                    </label>
+
+
+                    <input
+                        type="date"
+                        name="data_fim"
+                        value="{{ data_fim }}"
+                        required
+                    >
+
+                </div>
+
+
+
+                <button
+                    type="submit"
+                    class="botao-aplicar"
+                >
+
+                    🔎 Aplicar período
+
+                </button>
+
+            </form>
+
+
+
+            <div class="periodo-atual">
+
+                📊 Exibindo:
+
+                <strong>
+                    {{ titulo_periodo }}
+                </strong>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =========================
+             CARDS
+        ========================= -->
+
+        <section class="financeiro-cards">
+
+
+            <div class="financeiro-card card-faturamento">
+
+                <span>
+                    💰 Faturamento bruto
+                </span>
+
+
+                <h2>
+
+                    R$
+                    {{ "%.2f"|format(faturamento) }}
+
+                </h2>
+
+            </div>
+
+
+
+            <div class="financeiro-card card-atendimentos">
+
+                <span>
+                    ✂️ Atendimentos realizados
+                </span>
+
+
+                <h2>
+
+                    {{ total_atendimentos }}
+
+                </h2>
+
+            </div>
+
+
+
+            <div class="financeiro-card card-comissao">
+
+                <span>
+                    💸 Comissões
+                </span>
+
+
+                <h2>
+
+                    R$
+                    {{ "%.2f"|format(comissao_total) }}
+
+                </h2>
+
+            </div>
+
+
+
+            <div class="financeiro-card card-liquido">
+
+                <span>
+                    🏦 Líquido do salão
+                </span>
+
+
+                <h2>
+
+                    R$
+                    {{ "%.2f"|format(valor_liquido) }}
+
+                </h2>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =========================
+             GRÁFICOS
+        ========================= -->
+
+        <section class="graficos">
+
+
+            <!-- FATURAMENTO -->
+
+            <div class="grafico-card">
+
+                <h2>
+                    📈 Faturamento por dia
+                </h2>
+
+
+                <div class="grafico-container">
+
+                    <canvas id="graficoFaturamento"></canvas>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- ATENDIMENTOS -->
+
+            <div class="grafico-card">
+
+                <h2>
+                    ✂️ Atendimentos por dia
+                </h2>
+
+
+                <div class="grafico-container">
+
+                    <canvas id="graficoAtendimentos"></canvas>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =========================
+             PROFISSIONAIS
+        ========================= -->
+
+        <section class="lista">
+
+            <h2>
+                👩‍💼 Desempenho dos profissionais
+            </h2>
+
+
+            {% if profissionais_financeiro %}
+
+
+                <table class="financeiro-tabela">
+
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Profissional
+                            </th>
+
+                            <th>
+                                Atendimentos
+                            </th>
+
+                            <th>
+                                Faturamento
+                            </th>
+
+                            <th>
+                                Comissão
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+
+                    <tbody>
+
+
+                        {% for profissional in profissionais_financeiro %}
+
+
+                            <tr>
+
+
+                                <td>
+
+                                    <strong>
+
+                                        👤
+                                        {{ profissional['nome'] }}
+
+                                    </strong>
+
+                                </td>
+
+
+
+                                <td>
+
+                                    ✂️
+                                    {{ profissional['atendimentos'] }}
+
+                                </td>
+
+
+
+                                <td
+                                    class="valor-faturamento"
+                                >
+
+                                    R$
+
+                                    {{ "%.2f"|format(
+                                        profissional['faturamento']
+                                    ) }}
+
+                                </td>
+
+
+
+                                <td
+                                    class="valor-comissao"
+                                >
+
+                                    R$
+
+                                    {{ "%.2f"|format(
+                                        profissional['comissao']
+                                    ) }}
+
+                                </td>
+
+
+                            </tr>
+
+
+                        {% endfor %}
+
+
+                    </tbody>
+
+
+                </table>
+
+
+            {% else %}
+
+
+                <p>
+
+                    📭 Nenhum profissional cadastrado.
+
+                </p>
+
+
+            {% endif %}
+
+
+        </section>
+
+
+    </main>
+
+
+</div>
+
+
+
+<!-- =========================
+     GRÁFICOS JAVASCRIPT
+========================= -->
+
+<script>
+
+
+    /* =========================
+       DADOS VINDOS DO FLASK
+    ========================= */
+
+
+    const datas = {{ grafico_datas | tojson }};
+
+const faturamento = {{ grafico_faturamento | tojson }};
+
+const atendimentos = {{ grafico_atendimentos | tojson }};
+
+console.log("Datas:", datas);
+console.log("Faturamento:", faturamento);
+console.log("Atendimentos:", atendimentos);
+
+
+    /* =========================
+       GRÁFICO DE FATURAMENTO
+    ========================= */
+
+
+    const contextoFaturamento =
+        document
+            .getElementById(
+                "graficoFaturamento"
+            )
+            .getContext("2d");
+
+
+    new Chart(
+        contextoFaturamento,
+        {
+
+            type: "line",
+
+            data: {
+
+                labels: datas,
+
+                datasets: [
+
+                    {
+
+                        label:
+                            "Faturamento (R$)",
+
+                        data:
+                            faturamento,
+
+                        borderWidth: 3,
+
+                        tension: 0.3,
+
+                        fill: false
+
+                    }
+
+                ]
+
+            },
+
+            options: {
+
+                responsive: true,
+
+                maintainAspectRatio: false,
+
+                plugins: {
+
+                    legend: {
+
+                        display: true
+
+                    }
+
+                },
+
+                scales: {
+
+                    y: {
+
+                        beginAtZero: true
+
+                    }
+
+                }
+
+            }
+
+        }
+    );
+
+
+
+    /* =========================
+       GRÁFICO DE ATENDIMENTOS
+    ========================= */
+
+
+    const contextoAtendimentos =
+        document
+            .getElementById(
+                "graficoAtendimentos"
+            )
+            .getContext("2d");
+
+
+    new Chart(
+        contextoAtendimentos,
+        {
+
+            type: "bar",
+
+            data: {
+
+                labels: datas,
+
+                datasets: [
+
+                    {
+
+                        label:
+                            "Atendimentos",
+
+                        data:
+                            atendimentos,
+
+                        borderWidth: 1
+
+                    }
+
+                ]
+
+            },
+
+            options: {
+
+                responsive: true,
+
+                maintainAspectRatio: false,
+
+                plugins: {
+
+                    legend: {
+
+                        display: true
+
+                    }
+
+                },
+
+                scales: {
+
+                    y: {
+
+                        beginAtZero: true,
+
+                        ticks: {
+
+                            precision: 0
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+        }
+    );
+
+
+</script>
+
+
+</body>
+
+</html>

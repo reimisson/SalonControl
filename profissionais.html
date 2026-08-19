@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>Profissionais - SalonControl</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+
+</head>
+
+<body>
+
+<div class="layout">
+
+    <aside class="sidebar">
+
+        <h2>💇 SalonControl</h2>
+
+        <nav>
+
+            <a href="/">🏠 Dashboard</a>
+
+            <a href="/clientes">👥 Clientes</a>
+
+            <a href="/agenda">📅 Agenda</a>
+
+            <a href="/servicos">✂️ Serviços</a>
+
+            <a href="/profissionais" class="ativo">
+                👩 Profissionais
+            </a>
+
+            <a href="/financeiro">
+                💰 Financeiro
+            </a>
+
+        </nav>
+
+    </aside>
+
+
+    <main class="conteudo">
+
+        <header>
+
+            <h1>Profissionais</h1>
+
+            <p>
+                Cadastre os profissionais que trabalham no salão.
+            </p>
+
+        </header>
+
+
+        <section class="formulario">
+
+            <h2>👩 Novo Profissional</h2>
+
+            <form
+                action="/profissionais/novo"
+                method="POST"
+            >
+
+                <label>Nome</label>
+
+                <input
+                    type="text"
+                    name="nome"
+                    placeholder="Ex: Ana"
+                    required
+                >
+
+
+                <label>Telefone</label>
+
+                <input
+                    type="text"
+                    name="telefone"
+                    placeholder="Ex: (88) 99999-9999"
+                >
+
+
+                <label>Especialidade</label>
+
+                <input
+                    type="text"
+                    name="especialidade"
+                    placeholder="Ex: Cabeleireira"
+                >
+
+
+                <label>Comissão (%)</label>
+
+                <input
+                    type="number"
+                    name="comissao"
+                    placeholder="Ex: 30"
+                    step="0.01"
+                    min="0"
+                    max="100"
+                    value="0"
+                >
+
+
+                <button type="submit">
+                    Cadastrar Profissional
+                </button>
+
+            </form>
+
+        </section>
+
+
+        <section class="lista">
+
+            <h2>👩 Profissionais cadastrados</h2>
+
+
+            {% if profissionais %}
+
+                {% for profissional in profissionais %}
+
+                    <div class="cliente">
+
+                        <div>
+
+                            <strong>
+                                {{ profissional["nome"] }}
+                            </strong>
+
+                            <br>
+
+                            📱
+                            {{ profissional["telefone"] or "Sem telefone" }}
+
+                            <br>
+
+                            ✂️
+                            {{ profissional["especialidade"] or "Não informada" }}
+
+                            <br>
+
+                            💰 Comissão:
+                            {{ "%.2f"|format(profissional["comissao"]) }}%
+
+                        </div>
+
+
+                        <div class="badge">
+
+                            #{{ profissional["id"] }}
+
+                        </div>
+
+                    </div>
+
+                {% endfor %}
+
+            {% else %}
+
+                <p>
+                    Nenhum profissional cadastrado.
+                </p>
+
+            {% endif %}
+
+        </section>
+
+    </main>
+
+</div>
+
+</body>
+
+</html>

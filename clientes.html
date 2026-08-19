@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Clientes - SalonControl</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<div class="layout">
+
+    <aside class="sidebar">
+        <h2>💇 SalonControl</h2>
+
+        <nav>
+            <a href="/">🏠 Dashboard</a>
+            <a href="/clientes" class="ativo">👥 Clientes</a>
+            <a href="/agenda">📅 Agenda</a>
+            <a href="/servicos">✂️ Serviços</a>
+            <a href="/profissionais">👩 Profissionais</a>
+            <a href="/financeiro">💰 Financeiro</a>
+        </nav>
+    </aside>
+
+    <main class="conteudo">
+
+        <header>
+            <h1>Clientes</h1>
+            <p>Cadastro e informações dos clientes.</p>
+        </header>
+
+        <section class="formulario">
+
+            <h2>👤 Novo Cliente</h2>
+
+            <form action="/clientes/novo" method="POST">
+
+                <input type="text" name="nome" placeholder="Nome" required>
+
+                <input type="text" name="telefone" placeholder="Telefone">
+
+                <input type="email" name="email" placeholder="E-mail">
+
+                <textarea name="observacoes"
+                    placeholder="Observações"></textarea>
+
+                <button type="submit">
+                    Cadastrar Cliente
+                </button>
+
+            </form>
+
+        </section>
+
+        <section class="lista">
+
+            <h2>Clientes cadastrados</h2>
+
+            {% for cliente in clientes %}
+
+            <div class="cliente">
+
+                <div>
+                    <strong>{{ cliente["nome"] }}</strong>
+                    <br>
+                    📱 {{ cliente["telefone"] or "Sem telefone" }}
+                    <br>
+                    📧 {{ cliente["email"] or "Sem e-mail" }}
+                </div>
+
+                <div class="badge">
+                    #{{ cliente["id"] }}
+                </div>
+
+            </div>
+
+            {% else %}
+
+            <p>Nenhum cliente cadastrado.</p>
+
+            {% endfor %}
+
+        </section>
+
+    </main>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SalonControl</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+
+</head>
+
+
+<body>
+
+<div class="layout">
+
+
+    <!-- ========================= -->
+    <!-- MENU LATERAL -->
+    <!-- ========================= -->
+
+    <aside class="sidebar">
+
+        <h2>💇 SalonControl</h2>
+
+        <nav>
+
+            <a href="{{ url_for('inicio') }}" class="ativo">
+                🏠 Dashboard
+            </a>
+
+            <a href="{{ url_for('clientes') }}">
+                👥 Clientes
+            </a>
+
+            <a href="{{ url_for('agenda') }}">
+                📅 Agenda
+            </a>
+
+            <a href="{{ url_for('servicos') }}">
+                ✂️ Serviços
+            </a>
+
+            <a href="{{ url_for('profissionais') }}">
+                👩 Profissionais
+            </a>
+
+            <a href="{{ url_for('financeiro') }}">
+                💰 Financeiro
+            </a>
+
+        </nav>
+
+    </aside>
+
+
+    <!-- ========================= -->
+    <!-- CONTEÚDO -->
+    <!-- ========================= -->
+
+    <main class="conteudo">
+
+
+        <header>
+
+            <h1>Olá! 👋</h1>
+
+            <p>
+                Bem-vindo ao SalonControl.
+            </p>
+
+        </header>
+
+
+        <!-- ========================= -->
+        <!-- CARDS COLORIDOS -->
+        <!-- ========================= -->
+
+        <section class="cards">
+
+
+            <!-- CLIENTES -->
+
+            <a
+                href="{{ url_for('clientes') }}"
+                class="card azul"
+                style="text-decoration:none;"
+            >
+
+                <span>
+                    👥 Clientes
+                </span>
+
+                <h2>
+                    {{ clientes|length }}
+                </h2>
+
+                <p>
+                    Clientes cadastrados
+                </p>
+
+            </a>
+
+
+
+            <!-- AGENDAMENTOS -->
+
+            <a
+                href="{{ url_for('agenda') }}"
+                class="card verde"
+                style="text-decoration:none;"
+            >
+
+                <span>
+                    📅 Agenda
+                </span>
+
+                <h2>
+                    {{ total_agendamentos }}
+                </h2>
+
+                <p>
+                    Agendamentos ativos
+                </p>
+
+            </a>
+
+
+
+            <!-- FINANCEIRO -->
+
+            <a
+                href="{{ url_for('financeiro') }}"
+                class="card roxo"
+                style="text-decoration:none;"
+            >
+
+                <span>
+                    💰 Financeiro
+                </span>
+
+                <h2>
+                    R$ {{ "%.2f"|format(faturamento) }}
+                </h2>
+
+                <p>
+                    Faturamento atual
+                </p>
+
+            </a>
+
+
+        </section>
+
+
+
+        <!-- ========================= -->
+        <!-- ACESSO RÁPIDO -->
+        <!-- ========================= -->
+
+        <section class="lista">
+
+            <h2>
+                🚀 Acesso rápido
+            </h2>
+
+
+            <div
+                style="
+                    display:flex;
+                    gap:10px;
+                    flex-wrap:wrap;
+                "
+            >
+
+                <a
+                    href="{{ url_for('clientes') }}"
+                    class="botao"
+                    style="
+                        background:#2563eb;
+                        color:white;
+                        padding:12px 18px;
+                        border-radius:10px;
+                        text-decoration:none;
+                    "
+                >
+
+                    👥 Clientes
+
+                </a>
+
+
+                <a
+                    href="{{ url_for('agenda') }}"
+                    class="botao"
+                    style="
+                        background:#16a34a;
+                        color:white;
+                        padding:12px 18px;
+                        border-radius:10px;
+                        text-decoration:none;
+                    "
+                >
+
+                    📅 Agenda
+
+                </a>
+
+
+                <a
+                    href="{{ url_for('servicos') }}"
+                    class="botao"
+                    style="
+                        background:#7c3aed;
+                        color:white;
+                        padding:12px 18px;
+                        border-radius:10px;
+                        text-decoration:none;
+                    "
+                >
+
+                    ✂️ Serviços
+
+                </a>
+
+
+                <a
+                    href="{{ url_for('profissionais') }}"
+                    class="botao"
+                    style="
+                        background:#ea580c;
+                        color:white;
+                        padding:12px 18px;
+                        border-radius:10px;
+                        text-decoration:none;
+                    "
+                >
+
+                    👩 Profissionais
+
+                </a>
+
+
+                <a
+                    href="{{ url_for('financeiro') }}"
+                    class="botao"
+                    style="
+                        background:#0891b2;
+                        color:white;
+                        padding:12px 18px;
+                        border-radius:10px;
+                        text-decoration:none;
+                    "
+                >
+
+                    💰 Financeiro
+
+                </a>
+
+            </div>
+
+        </section>
+
+
+        <!-- ========================= -->
+        <!-- RESUMO -->
+        <!-- ========================= -->
+
+        <section class="lista">
+
+            <h2>
+                📊 Resumo do salão
+            </h2>
+
+            <div class="cliente">
+
+                <div>
+
+                    <strong>
+                        👥 Clientes cadastrados
+                    </strong>
+
+                </div>
+
+                <div class="badge">
+
+                    {{ clientes|length }}
+
+                </div>
+
+            </div>
+
+
+            <div class="cliente">
+
+                <div>
+
+                    <strong>
+                        📅 Agendamentos ativos
+                    </strong>
+
+                </div>
+
+                <div class="badge">
+
+                    {{ total_agendamentos }}
+
+                </div>
+
+            </div>
+
+
+            <div class="cliente">
+
+                <div>
+
+                    <strong>
+                        👩 Profissionais
+                    </strong>
+
+                </div>
+
+                <div class="badge">
+
+                    {{ total_profissionais }}
+
+                </div>
+
+            </div>
+
+
+        </section>
+
+
+    </main>
+
+</div>
+
+</body>
+
+</html>
