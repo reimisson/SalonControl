@@ -1040,13 +1040,19 @@ def financeiro():
 
 
 # =========================
+# CRIAR BANCO AO INICIAR
+# =========================
+
+criar_banco()
+
+
+# =========================
 # INICIAR SISTEMA
 # =========================
 
 if __name__ == "__main__":
 
-    criar_banco()
-
     app.run(
         debug=True
+    )
     )
